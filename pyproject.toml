@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "example-project"
+version = "0.0.1"
+description = "Demo project"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "example_project"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = {extras = ["all"], version = "^0.98.0"}
+sqlalchemy = "1.4"
+alembic = "^1.11.1"
+psycopg2-binary = "^2.9.6"
+starlette-graphene3 = "^0.6.0"
+graphene-sqlalchemy = "3.0.0b4"
+fastapi-middleware = "^0.1.0"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.0.0"
+pylint = "^2.17.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+# Example configuration for pylint.
+[tool.pylint.reports]
+# Deactivate the evaluation score.
+score = false
+
