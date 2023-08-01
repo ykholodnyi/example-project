@@ -4,7 +4,6 @@ from sqlalchemy.orm import joinedload, subqueryload
 from app.graphql.mixins import CRUMixin
 from app.graphql.types.book import BookType, GenreType
 from app.models import Book, Genre
-from app.models.base import db_session
 
 
 class BookQuery(CRUMixin):
@@ -26,17 +25,17 @@ class BookQuery(CRUMixin):
 
     @classmethod
     def resolve_books(cls, _, info):
-        return db_session.query(Book).options(
+        return info.context["request"].state.db.query(Book).options(
             subqueryload(Book.genres),
             joinedload(Book.author),
         ).all()
 
     @classmethod
     def resolve_genre(cls, _, info, genre_id):
-        return cls.get_object(obj_id=genre_id, model=Genre)
+        return cls.get_object(obj_id=genre_id, model=Genre, session=info.context["request"].state.db)
 
     @classmethod
     def resolve_genres(cls, _, info):
-        return db_session.query(Genre).options(
+        return info.context["request"].state.db.query(Genre).options(
             subqueryload(Genre.books),
         ).all()

@@ -5,6 +5,7 @@ from graphql import GraphQLError
 
 class ErrorCodes(enum.Enum):
     NOT_FOUND = "NOT_FOUND"
+    VALIDATION_ERROR = "VALIDATION_ERROR"
 
 
 class DefaultGQLError(GraphQLError):

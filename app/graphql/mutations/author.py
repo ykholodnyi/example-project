@@ -20,7 +20,7 @@ class CreateAuthor(graphene.Mutation, CRUMixin):
     @classmethod
     def mutate(cls, root, info, author, **kwargs):
         obj = Author(**author)
-        obj = cls.add_object(obj=obj)
+        obj = cls.add_object(obj=obj, session=info.context["request"].state.db)
         return CreateAuthor(author=obj)
 
 
@@ -32,6 +32,7 @@ class UpdateAuthor(graphene.Mutation, CRUMixin):
 
     @classmethod
     def mutate(cls, root, info, author, **kwargs):
-        obj = cls.get_object(obj_id=author.id, model=Author)
-        obj = cls.update_object(obj, author)
+        session = info.context["request"].state.db
+        obj = cls.get_object(obj_id=author.id, model=Author, session=session)
+        obj = cls.update_object(obj, author, session=session)
         return UpdateAuthor(author=obj)

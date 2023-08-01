@@ -4,15 +4,54 @@ services:
   app:
     build:
       context: .
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--workers", "4"]
     container_name: app-example-project
     depends_on:
       - postgres
     env_file:
       - .env
-    hostname: partner
     ports:
       - 8000:8000
+#    deploy:
+#      mode: replicated
+#      replicas: 3
+#      endpoint_mode: vip
+    volumes:
+        - ./:/app:rw
+
+  app2:
+    build:
+      context: .
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001", "--reload", "--workers", "4"]
+    container_name: app-example-project2
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    ports:
+      - 8001:8001
+#    deploy:
+#      mode: replicated
+#      replicas: 3
+#      endpoint_mode: vip
+    volumes:
+        - ./:/app:rw
+
+  app3:
+    build:
+      context: .
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8002", "--reload", "--workers", "4"]
+    container_name: app-example-project3
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    ports:
+      - 8002:8002
+#    deploy:
+#      mode: replicated
+#      replicas: 3
+#      endpoint_mode: vip
     volumes:
         - ./:/app:rw
 
