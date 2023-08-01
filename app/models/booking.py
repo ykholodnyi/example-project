@@ -42,7 +42,8 @@ class Booking(Base):
                 "SELECT EXISTS ("
                 "SELECT 1 FROM bookings "
                 "WHERE tsrange(start_time, end_time, '()') && tsrange(:new_start, :new_end, '()')"
-                "AND machine_code = :machine_code)"
+                "AND machine_code = :machine_code "
+                "AND status != 'CANCELED')"
             ),
             {"new_start": start_time, "new_end": end_time, "machine_code": machine_code},
         ).scalar()
