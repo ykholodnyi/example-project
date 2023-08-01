@@ -8,7 +8,7 @@ from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import joinedload, subqueryload
 
 from app.graphql.exceptions import DefaultGQLError, ErrorCodes
-from app.models.base import db_session, RelationshipNotFound
+from app.models.base import RelationshipNotFound, SessionLocal
 
 logger = logging.getLogger(__name__)
 
@@ -22,9 +22,9 @@ class CRUMixin:
             return f"object: {type(obj).__name__}"
 
     @classmethod
-    def get_object(cls, obj_id: Any, model, eager_load: bool = False):
+    def get_object(cls, obj_id: Any, model, session, eager_load: bool = False):
         try:
-            query = db_session.query(model).filter_by(id=obj_id)
+            query = session.query(model).filter_by(id=obj_id)
             if eager_load:
                 # Get the model's relationships using SQLAlchemy's inspect module
                 relationships = inspect(model).relationships
@@ -41,7 +41,7 @@ class CRUMixin:
         except DatabaseError as e:
             error_str = f"DatabaseError, object ID: {obj_id}, {e}"
             logger.exception(error_str)
-            db_session.rollback()
+            session.rollback()
             # not exposing the error to the client
             raise DefaultGQLError()
 
@@ -56,22 +56,22 @@ class CRUMixin:
         return obj
 
     @classmethod
-    def update_object(cls, obj, data: InputObjectType):
+    def update_object(cls, obj, data: InputObjectType, session: SessionLocal):
         try:
-            obj.update(data)
-            db_session.commit()
+            obj.update(data, session)
+            session.commit()
 
         except DatabaseError as e:
             error_str = f"DatabaseError, {cls.get_obj_ref(obj)}, {e}"
             logger.exception(error_str)
-            db_session.rollback()
+            session.rollback()
             # not exposing the error to the client
             raise DefaultGQLError()
 
         except RelationshipNotFound as e:
             error_str = f"RelationshipNotFound. {e}"
             logger.info(error_str)
-            db_session.rollback()
+            session.rollback()
             raise DefaultGQLError(
                 error_str=error_str,
                 extensions={"code": ErrorCodes.NOT_FOUND.value})
@@ -79,14 +79,14 @@ class CRUMixin:
         return obj
 
     @classmethod
-    def add_object(cls, obj):
+    def add_object(cls, obj, session: SessionLocal):
         try:
-            db_session.add(obj)
-            db_session.commit()
+            session.add(obj)
+            session.commit()
         except DatabaseError as e:
             error_str = f"DatabaseError, {cls.get_obj_ref(obj)}, {e}"
             logger.exception(error_str)
-            db_session.rollback()
+            session.rollback()
             # not exposing the error to the client
             raise DefaultGQLError()
 

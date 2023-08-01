@@ -22,7 +22,7 @@ class CreateBook(graphene.Mutation, CRUMixin):
     @classmethod
     def mutate(cls, root, info, book, **kwargs):
         obj = Book(**book)
-        obj = cls.add_object(obj=obj)
+        obj = cls.add_object(obj=obj, session=info.context["request"].state.db)
         return CreateBook(book=obj)
 
 
@@ -34,8 +34,9 @@ class UpdateBook(graphene.Mutation, CRUMixin):
 
     @classmethod
     def mutate(cls, root, info, book, **kwargs):
-        obj = cls.get_object(obj_id=book.id, model=Book)
-        obj = cls.update_object(obj, book)
+        session = info.context["request"].state.db
+        obj = cls.get_object(obj_id=book.id, model=Book, session=session)
+        obj = cls.update_object(obj=obj, data=book, session=session)
         return UpdateBook(book=obj)
 
 
@@ -48,7 +49,7 @@ class CreateGenre(graphene.Mutation, CRUMixin):
     @classmethod
     def mutate(cls, root, info, genre, **kwargs):
         obj = Genre(**genre)
-        obj = cls.add_object(obj=obj)
+        obj = cls.add_object(obj=obj, session=info.context["request"].state.db)
         return CreateGenre(genre=obj)
 
 
@@ -60,6 +61,7 @@ class UpdateGenre(graphene.Mutation, CRUMixin):
 
     @classmethod
     def mutate(cls, root, info, genre, **kwargs):
-        obj = cls.get_object(obj_id=genre.id, model=Genre)
-        obj = cls.update_object(obj, genre)
+        session = info.context["request"].state.db
+        obj = cls.get_object(obj_id=genre.id, model=Genre, session=session)
+        obj = cls.update_object(obj, genre, session=session)
         return UpdateGenre(genre=obj)
