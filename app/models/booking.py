@@ -1,11 +1,10 @@
 import enum
 
 from sqlalchemy import (
-    Column, String, DateTime, Integer, ForeignKey,
-    and_, or_, text
+    Column, String, DateTime, Integer, ForeignKey, text
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY, ENUM as PG_ENUM
+from sqlalchemy.dialects.postgresql import ENUM as PG_ENUM
 
 from app.models.base import Base, SessionLocal
 
